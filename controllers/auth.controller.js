@@ -1,21 +1,33 @@
 import User from "../models/user.model.js";
 
 export const signup = async (req, res, next) => {
-   const { name, email, password, role, phone, collegeName, image } = req.body;
+   const {
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+      collegeName,
+      userImage,
+      collegeLogo,
+   } = req.body;
 
-   if (!name || !email || !password || !role || !phone || !collegeName) {
+   if (!firstName || !lastName || !email || !password || !collegeName) {
       return res.status(400).json({ message: "All fields are required" });
    }
 
    try {
       const user = new User({
-         name,
+         firstName,
+         lastName,
          email,
          password,
          role,
-         phone,
          collegeName,
-         image,
+         image: {
+            userImage,
+            collegeLogo,
+         },
       });
       user.password = await user.hashPassword(password);
       await user.save();
