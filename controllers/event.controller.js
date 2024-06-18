@@ -1,9 +1,9 @@
 import Event from "../models/event.model.js";
 
 export const createEvent = async (req, res, next) => {
-   const { eventName, startDate, endDate, dis } = req.body;
+   const { eventName, startDate, endDate, disc } = req.body;
    const userId = req.user.sub;
-
+   // console.log(req);
    if (!eventName) {
       res.status(400).json({
          sucess: failure,
@@ -15,7 +15,7 @@ export const createEvent = async (req, res, next) => {
          eventName,
          startDate,
          endDate,
-         dis,
+         disc,
          userId,
       });
       await event.save();
@@ -26,5 +26,19 @@ export const createEvent = async (req, res, next) => {
       });
    } catch (err) {
       next(err);
+   }
+};
+
+export const getEvents = async (req, res, next) => {
+   const userId = req.user.sub;
+   try {
+      const events = await Event.find({ userId });
+      res.status(200).json({
+         success: true,
+         message: "Events fetched successfully",
+         events,
+      });
+   } catch (err) {
+      console.log(err);
    }
 };

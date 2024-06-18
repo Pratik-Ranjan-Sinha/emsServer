@@ -65,13 +65,11 @@ export const signin = async (req, res, next) => {
       // seperate the password from the user object
       const { password: pass, ...rest } = user._doc;
       const token = await user.generateToken();
-      res.status(200)
-         .cookie("token", token, {
-            httpOnly: true,
-            sameSite: "strict",
-            secure: true,
-         })
-         .json({ message: "User logged in successfully", rest });
+      res.status(200).json({
+         message: "User logged in successfully",
+         rest,
+         token,
+      });
    } catch (err) {
       next(err);
    }
