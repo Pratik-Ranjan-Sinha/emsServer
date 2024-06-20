@@ -6,6 +6,7 @@ import auth from "./routes/auth.routes.js";
 import event from "./routes/event.routes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import program from "./routes/program.routes.js";
 const app = express();
 
 // error handling middleware
@@ -28,6 +29,7 @@ app.listen(3000, () => {
 });
 app.use("/auth", auth);
 app.use("/event", event);
+app.use("/program", program);
 app.get("/", (req, res) => {
    res.send("Hello World");
 });
