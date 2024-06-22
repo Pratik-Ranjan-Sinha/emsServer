@@ -31,3 +31,22 @@ export const createProgram = async (req, res, next) => {
       next(err);
    }
 };
+
+// getPrograms wiht id or give all the programs
+
+export const getPrograms = async (req, res, next) => {
+   // get prrogra where eventid is equal to the eventid
+
+   const query = {};
+   req.query.programId && (query._id = req.query.programId);
+   req.query.eventId && (query.eventId = req.query.eventId);
+   try {
+      const programs = await Programs.find(query);
+      return res.status(200).json({
+         status: "success",
+         data: programs,
+      });
+   } catch (err) {
+      next(err);
+   }
+};

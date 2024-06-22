@@ -28,3 +28,7 @@ const teamSchema = new mongoose.Schema({
       required: true,
    },
 });
+
+const Team = mongoose.model("Team", teamSchema);
+
+export default Team;
