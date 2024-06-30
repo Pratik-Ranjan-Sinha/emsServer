@@ -1,5 +1,5 @@
 import Event from "../models/event.model.js";
-
+import Team from "../models/team.model.js";
 export const createEvent = async (req, res, next) => {
    const { eventName, startDate, endDate, disc } = req.body;
    const userId = req.user.sub;
@@ -40,5 +40,28 @@ export const getEvents = async (req, res, next) => {
       });
    } catch (err) {
       console.log(err);
+   }
+};
+
+export const getSingleEvent = async (req, res, next) => {
+   const { eventId } = req.params;
+   const userId = req.user.sub;
+   try {
+      const event = await Event.findOne({ _id: eventId, userId })
+         .populate("userId") // This populates the teams array with the actual team documents from the Team collection
+         .exec();
+      if (!event) {
+         res.status(404).json({
+            success: false,
+            message: "Event not found",
+         });
+      }
+      res.status(200).json({
+         success: true,
+         message: "Event fetched successfully",
+         event,
+      });
+   } catch (err) {
+      next(err);
    }
 };

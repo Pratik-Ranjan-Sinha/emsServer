@@ -24,8 +24,7 @@ const teamSchema = new mongoose.Schema({
       type: [],
    },
    files: {
-      type: image,
-      required: true,
+      type: String,
    },
 });
 

@@ -20,6 +20,8 @@ app.use(
       credentials: true,
    })
 );
+mongoose.set("strictPopulate", false);
+
 app.use(ErrorHandler);
 app.listen(3000, () => {
    console.log("Server is running on port 3000");
