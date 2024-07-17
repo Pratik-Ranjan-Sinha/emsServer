@@ -1,21 +1,26 @@
 import Programs from "../models/program.model.js";
 import { sendEmail } from "../utils/emailsender.js";
-
+import Events from "../models/event.model.js";
 export const createProgram = async (req, res, next) => {
-   const { programName, date, eventId, email } = req.body;
+   console.log(req.body)
+   const { programName,coordinatorName,coordinatorEmail,coordinatorPhone, date, eventId, email } = req.body;
 
    const program = new Programs({
       programName,
       date,
       eventId,
-      passCode,
       coordinatorName,
       coordinatorEmail,
       coordinatorPhone,
    });
    const passCode = await program.createPassCode();
    try {
-      await program.save();
+      const savedProgram = await program.save()
+      await Events.findByIdAndUpdate(
+         eventId,
+         { $push: { programs: savedProgram._id } },
+         { new: true, useFindAndModify: false }
+     );
       sendEmail(
          coordinatorEmail,
          "Program assigned",
@@ -36,12 +41,14 @@ export const createProgram = async (req, res, next) => {
 
 export const getPrograms = async (req, res, next) => {
    // get prrogra where eventid is equal to the eventid
-
+   // console.log(req);
    const query = {};
    req.query.programId && (query._id = req.query.programId);
    req.query.eventId && (query.eventId = req.query.eventId);
+   // console.log(query);
    try {
-      const programs = await Programs.find(query);
+      const programs = await Programs.find(query).populate("teams");
+      // console.log(programs);
       return res.status(200).json({
          status: "success",
          data: programs,
@@ -50,3 +57,32 @@ export const getPrograms = async (req, res, next) => {
       next(err);
    }
 };
+
+
+// edit the program
+
+export const editProgram = async (req, res, next) => {
+   const { programId } = req.params;
+   const { programName, coordinatorName, coordinatorEmail, coordinatorPhone, date } = req.body;
+   try {
+      const program = await Programs.findById(programId);
+      if (!program) {
+         return res.status(404).json({
+            status: "fail",
+            message: "Program not found",
+         });
+      }
+      program.programName = programName;
+      program.coordinatorName = coordinatorName;
+      program.coordinatorEmail = coordinatorEmail;
+      program.coordinatorPhone = coordinatorPhone;
+      program.date = date;
+      await program.save();
+      return res.status(200).json({
+         status: "success",
+         data: program,
+      });
+   } catch (err) {
+      next(err);
+   }
+}

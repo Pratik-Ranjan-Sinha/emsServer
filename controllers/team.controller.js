@@ -1,26 +1,34 @@
+import Programs from "../models/program.model.js";
 import Team from "../models/team.model.js";
 
-export const createTeam = (req, res, next) => {
+export const createTeam =async (req, res, next) => {
    const {
       eventId,
       programId,
       teamName,
-      teamLeaderName,
-      teamLeaderEmail,
-      teamLeaderPhone,
-      teamMembers,
+      leader,
+      email,
+      phone,
+      image,
+      members,
    } = req.body;
    const team = new Team({
       eventId,
       programId,
       teamName,
-      teamLeaderName,
-      teamLeaderEmail,
-      teamLeaderPhone,
-      teamMembers,
+      email,
+      leader,
+      phone,
+      image,
+      members,
    });
    try {
-      team.save();
+      const savedTeam = await team.save();
+
+      await Programs.findByIdAndUpdate(programId, {
+         $push: { teams: savedTeam._id } // Push the new team's ID into the program's teams array
+      });
+
       res.status(201).json({
          message: "Team created successfully",
          status: "success",
