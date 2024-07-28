@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import "dotenv/config";
 
 export const sendEmail = (email, subject, text) => {
    let transporer = nodemailer.createTransport({
